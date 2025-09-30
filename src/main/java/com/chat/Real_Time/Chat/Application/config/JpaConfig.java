@@ -6,26 +6,32 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Configuration
 public class JpaConfig {
 
     @Bean
     @Primary
-    public DataSource dataSource() {
-        // Render provides the connection details as individual environment variables.
-        // This is the most robust way to build the connection.
-        String host = System.getenv("PGHOST");
-        String port = System.getenv("PGPORT");
-        String dbname = System.getenv("PGDATABASE");
-        String username = System.getenv("PGUSER");
-        String password = System.getenv("PGPASSWORD");
-
-        if (host == null || port == null || dbname == null || username == null || password == null) {
-            throw new IllegalStateException("Database environment variables are not fully set.");
+    public DataSource dataSource() throws URISyntaxException {
+        String databaseUrl = System.getenv("DATABASE_URL");
+        if (databaseUrl == null) {
+            throw new IllegalStateException("DATABASE_URL environment variable is not set.");
         }
 
-        String dbUrl = "jdbc:postgresql://" + host + ":" + port + "/" + dbname;
+        URI dbUri = new URI(databaseUrl);
+
+        String username = dbUri.getUserInfo().split(":")[0];
+        String password = dbUri.getUserInfo().split(":")[1];
+        
+        // Handle the case where the port is not specified in the URL
+        int port = dbUri.getPort();
+        if (port == -1) {
+            port = 5432; // Default PostgreSQL port
+        }
+
+        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + port + dbUri.getPath();
 
         return DataSourceBuilder.create()
                 .url(dbUrl)
