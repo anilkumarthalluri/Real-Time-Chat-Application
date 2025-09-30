@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class RealTimeChatApplication {
 
 	public static void main(String[] args) {
+		System.out.println("--- Debugging Environment Variables ---");
+		System.out.println("SPRING_DATASOURCE_URL: " + System.getenv("SPRING_DATASOURCE_URL"));
 		SpringApplication.run(RealTimeChatApplication.class, args);
 	}
 }
