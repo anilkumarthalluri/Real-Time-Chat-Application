@@ -3,26 +3,29 @@ package com.chat.Real_Time.Chat.Application.config;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @Configuration
 public class JpaConfig {
 
     @Bean
-    public DataSource dataSource() throws URISyntaxException {
-        String databaseUrl = System.getenv("DATABASE_URL");
-        if (databaseUrl == null) {
-            throw new IllegalStateException("DATABASE_URL environment variable is not set.");
+    @Primary
+    public DataSource dataSource() {
+        // Render provides the connection details as individual environment variables.
+        // This is the most robust way to build the connection.
+        String host = System.getenv("PGHOST");
+        String port = System.getenv("PGPORT");
+        String dbname = System.getenv("PGDATABASE");
+        String username = System.getenv("PGUSER");
+        String password = System.getenv("PGPASSWORD");
+
+        if (host == null || port == null || dbname == null || username == null || password == null) {
+            throw new IllegalStateException("Database environment variables are not fully set.");
         }
 
-        URI dbUri = new URI(databaseUrl);
-
-        String username = dbUri.getUserInfo().split(":")[0];
-        String password = dbUri.getUserInfo().split(":")[1];
-        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+        String dbUrl = "jdbc:postgresql://" + host + ":" + port + "/" + dbname;
 
         return DataSourceBuilder.create()
                 .url(dbUrl)
