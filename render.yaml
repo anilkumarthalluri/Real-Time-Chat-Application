@@ -3,7 +3,7 @@
 
 services:
   # Service 1: The PostgreSQL Database
-  - type: psql
+  - type: postgres # CORRECTED: Was 'psql', now 'postgres'
     name: chat-database
     # The region should be close to you.
     # Options: oregon, frankfurt, ohio, singapore
@@ -32,8 +32,6 @@ services:
       - key: JAVA_VERSION
         value: 17
       # Set your other secrets here.
-      # IMPORTANT: For real secrets, use a Secret File or Environment Group.
-      # For now, to get it working, we will put them here.
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: chat-database
