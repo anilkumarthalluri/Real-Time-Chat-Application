@@ -17,6 +17,5 @@ WORKDIR /app
 # Copy the executable JAR from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# The command to run the application is now in render.yaml
-# The port will be set dynamically at startup.
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Add a delay to the entrypoint to wait for the database to be ready
+ENTRYPOINT ["sh", "-c", "sleep 10; java -jar app.jar"]
