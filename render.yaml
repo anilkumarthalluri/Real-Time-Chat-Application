@@ -11,20 +11,18 @@ services:
   # The Java Spring Boot Application
   - type: "web"
     name: "real-time-chat-app"
-    runtime: "docker" # CORRECTED: Use 'docker' runtime
+    runtime: "docker"
     region: "oregon"
     plan: "free"
-    # Dockerfile path is relative to the project root
     dockerfilePath: ./Dockerfile
+    # CORRECTED: The start command now uses the PORT variable provided by Render.
+    startCommand: "java -jar app.jar --server.port=${PORT}"
     envVars:
-      # Set the Java version for the build
       - key: "JAVA_VERSION"
         value: "17"
-      # Link the database to this web service.
       - key: "DATABASE_URL"
         fromDatabase:
           name: "chat-database"
-          property: "connectionString" # The raw connection string for our DatabaseConfig
-      # Set your other secrets
+          property: "connectionString"
       - key: "TOKEN_SIGNING_KEY"
         value: "413F4428472B4B6250655368566D5970337336763979244226452948404D6351"
