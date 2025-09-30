@@ -1,42 +1,27 @@
-# This is the configuration file for Render.
-
-databases:
-  - name: "chat-database"
-    region: "oregon"
-    plan: "free"
-
 services:
-  - type: "web"
-    name: "real-time-chat-app"
-    runtime: "docker"
-    region: "oregon"
-    plan: "free"
+  - type: web
+    name: spring-boot-app
+    env: docker
+    repo: https://github.com/your-repo/real-time-chat-application # Replace with your repository URL
+    branch: main
     dockerfilePath: ./Dockerfile
     envVars:
-      - key: "JAVA_VERSION"
-        value: "17"
-      - key: "SERVER_PORT"
-        value: "10000"
-      # Expose database credentials as individual environment variables
-      - key: "DB_HOST"
-        fromDatabase:
-          name: "chat-database"
-          property: "host"
-      - key: "DB_PORT"
-        fromDatabase:
-          name: "chat-database"
-          property: "port"
-      - key: "DB_NAME"
-        fromDatabase:
-          name: "chat-database"
-          property: "database"
-      - key: "DB_USER"
-        fromDatabase:
-          name: "chat-database"
-          property: "user"
-      - key: "DB_PASSWORD"
-        fromDatabase:
-          name: "chat-database"
-          property: "password"
-      - key: "TOKEN_SIGNING_KEY"
-        value: "413F4428472B4B6250655368566D5970337336763979244226452948404D6351"
+      - key: SPRING_DATASOURCE_URL
+        fromService:
+          type: psql
+          name: chat-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromService:
+          type: psql
+          name: chat-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromService:
+          type: psql
+          name: chat-db
+          property: password
+
+  - type: psql
+    name: chat-db
+    ipAllowList: [] # Allow all IPs to connect to the database

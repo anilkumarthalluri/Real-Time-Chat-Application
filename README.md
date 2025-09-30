@@ -52,16 +52,22 @@ Follow these instructions to get a copy of the project up and running on your lo
         CREATE DATABASE chat;
         ```
 
-3.  **Configure the application:**
+3.  **Configure the application for local development:**
     *   Navigate to the `src/main/resources` directory.
-    *   Create a new file named `application.properties` by copying the example file.
-        ```sh
-        cp application.properties.example application.properties
-        ```
-    *   Open `application.properties` and update the following properties with your database credentials and a unique, strong secret key for JWT signing:
+    *   Create a new file named `application.properties`.
+    *   Add the following content to the `application.properties` file. Update the `spring.datasource.username`, `spring.datasource.password`, and `token.signing.key` with your local database credentials and a unique, strong secret key for JWT signing.
         ```properties
+        spring.application.name=Real-Time-Chat-Application
+
+        server.port=8081
+
+        spring.datasource.driver-class-name=org.postgresql.Driver
+        spring.datasource.url=jdbc:postgresql://localhost:5432/chat
         spring.datasource.username=your_db_username
         spring.datasource.password=your_db_password
+
+        spring.jpa.hibernate.ddl-auto=update
+
         token.signing.key=your_super_secret_and_long_signing_key
         ```
 
