@@ -15,18 +15,26 @@ services:
     envVars:
       - key: "JAVA_VERSION"
         value: "17"
-      - key: "SPRING_PROFILES_ACTIVE"
-        value: "prod"
       - key: "SERVER_PORT"
         value: "10000"
-      # Construct the JDBC URL in the classic format to ensure compatibility.
-      - key: "SPRING_DATASOURCE_URL"
-        value: "jdbc:postgresql://${chat-database.host}:${chat-database.port}/${chat-database.database}"
-      - key: "SPRING_DATASOURCE_USERNAME"
+      # Expose database credentials as individual environment variables
+      - key: "DB_HOST"
+        fromDatabase:
+          name: "chat-database"
+          property: "host"
+      - key: "DB_PORT"
+        fromDatabase:
+          name: "chat-database"
+          property: "port"
+      - key: "DB_NAME"
+        fromDatabase:
+          name: "chat-database"
+          property: "database"
+      - key: "DB_USER"
         fromDatabase:
           name: "chat-database"
           property: "user"
-      - key: "SPRING_DATASOURCE_PASSWORD"
+      - key: "DB_PASSWORD"
         fromDatabase:
           name: "chat-database"
           property: "password"
