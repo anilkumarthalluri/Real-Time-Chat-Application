@@ -15,17 +15,20 @@ services:
     envVars:
       - key: "JAVA_VERSION"
         value: "17"
-      # Set the active Spring profile to 'prod'. This will use application-prod.properties
       - key: "SPRING_PROFILES_ACTIVE"
         value: "prod"
-      # Set the server port for Render's health checks.
       - key: "SERVER_PORT"
         value: "10000"
-      # Use the connectionString from the database for the JDBC URL.
-      # Spring Boot will automatically parse the username and password from this URL.
+      # Construct the JDBC URL in the classic format to ensure compatibility.
       - key: "SPRING_DATASOURCE_URL"
+        value: "jdbc:postgresql://${chat-database.host}:${chat-database.port}/${chat-database.database}"
+      - key: "SPRING_DATASOURCE_USERNAME"
         fromDatabase:
           name: "chat-database"
-          property: "connectionString"
+          property: "user"
+      - key: "SPRING_DATASOURCE_PASSWORD"
+        fromDatabase:
+          name: "chat-database"
+          property: "password"
       - key: "TOKEN_SIGNING_KEY"
         value: "413F4428472B4B6250655368566D5970337336763979244226452948404D6351"
