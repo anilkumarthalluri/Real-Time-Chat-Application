@@ -21,16 +21,10 @@ services:
       # Set the server port for Render's health checks.
       - key: "SERVER_PORT"
         value: "10000"
-      # Construct the JDBC URL directly from Render's database properties.
+      # Use the connectionString from the database for the JDBC URL.
       - key: "SPRING_DATASOURCE_URL"
-        value: "jdbc:postgresql://${chat-database.host}:${chat-database.port}/${chat-database.database}"
-      - key: "SPRING_DATASOURCE_USERNAME"
         fromDatabase:
           name: "chat-database"
-          property: "user"
-      - key: "SPRING_DATASOURCE_PASSWORD"
-        fromDatabase:
-          name: "chat-database"
-          property: "password"
+          property: "connectionString"
       - key: "TOKEN_SIGNING_KEY"
         value: "413F4428472B4B6250655368566D5970337336763979244226452948404D6351"
