@@ -1,0 +1,46 @@
+# This is the configuration file for Render.
+# It defines all the services for your project.
+
+services:
+  # Service 1: The PostgreSQL Database
+  - type: psql
+    name: chat-database
+    # The region should be close to you.
+    # Options: oregon, frankfurt, ohio, singapore
+    region: oregon
+    plan: free
+
+  # Service 2: The Java Spring Boot Application
+  - type: web
+    name: real-time-chat-app
+    # This tells Render to use its native Java environment
+    env: java
+    region: oregon
+    plan: free
+    # Build and Start commands
+    buildCommand: "./mvnw package"
+    startCommand: "java -jar target/*.jar"
+    # Link the database to this web service
+    envVars:
+      # This tells our app the URL of the database we just defined above.
+      # The value comes from the 'chat-database' service.
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: chat-database
+          property: connectionString
+      # Set the Java version for the build
+      - key: JAVA_VERSION
+        value: 17
+      # Set your other secrets here.
+      # IMPORTANT: For real secrets, use a Secret File or Environment Group.
+      # For now, to get it working, we will put them here.
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: chat-database
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: chat-database
+          property: password
+      - key: TOKEN_SIGNING_KEY
+        value: 413F4428472B4B6250655368566D5970337336763979244226452948404D6351
