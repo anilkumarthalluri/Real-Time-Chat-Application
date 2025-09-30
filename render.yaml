@@ -8,20 +8,20 @@ services:
     envVars:
       - key: SPRING_DATASOURCE_URL
         fromService:
-          type: psql
+          type: postgres
           name: chat-db
           property: connectionString
       - key: SPRING_DATASOURCE_USERNAME
         fromService:
-          type: psql
+          type: postgres
           name: chat-db
           property: user
       - key: SPRING_DATASOURCE_PASSWORD
         fromService:
-          type: psql
+          type: postgres
           name: chat-db
           property: password
 
-  - type: psql
+  - type: postgres
     name: chat-db
     ipAllowList: [] # Allow all IPs to connect to the database
