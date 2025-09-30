@@ -15,23 +15,23 @@ public class DatabaseConfig {
 
     @Bean
     public DataSource dataSource() throws URISyntaxException {
-        // Render provides the database connection URL in this environment variable.
         String databaseUrl = System.getenv("DATABASE_URL");
         if (databaseUrl == null) {
             throw new IllegalStateException("DATABASE_URL environment variable is not set!");
         }
 
+        // The DATABASE_URL from Render is in the format: postgres://user:password@host/database
+        // The JDBC driver needs it in the format: jdbc:postgresql://host/database?user=user&password=password
+        // This is a robust way to perform that conversion.
+
         URI dbUri = new URI(databaseUrl);
 
         String username = dbUri.getUserInfo().split(":")[0];
         String password = dbUri.getUserInfo().split(":")[1];
-        // Construct the proper JDBC URL from the URI components.
-        String jdbcUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+        String jdbcUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + dbUri.getPort() + dbUri.getPath() + "?user=" + username + "&password=" + password;
 
         return DataSourceBuilder.create()
                 .url(jdbcUrl)
-                .username(username)
-                .password(password)
                 .build();
     }
 }
