@@ -76,11 +76,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.github.mfathi91</groupId>
-			<artifactId>postgresql-datasource-url-parser</artifactId>
-			<version>1.0.0</version>
-		</dependency>
 
 	</dependencies>
 
