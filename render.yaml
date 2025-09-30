@@ -1,28 +1,36 @@
 # This is the configuration file for Render.
 
-# Top-level key for databases
 databases:
   - name: "chat-database"
     region: "oregon"
     plan: "free"
 
-# Top-level key for services
 services:
-  # The Java Spring Boot Application
   - type: "web"
     name: "real-time-chat-app"
     runtime: "docker"
     region: "oregon"
     plan: "free"
     dockerfilePath: ./Dockerfile
-    # CORRECTED: The start command now uses the PORT variable provided by Render.
-    startCommand: "java -jar app.jar --server.port=${PORT}"
     envVars:
       - key: "JAVA_VERSION"
         value: "17"
-      - key: "DATABASE_URL"
+      # Set the active Spring profile to 'prod'. This deactivates the custom DatabaseConfig.
+      - key: "SPRING_PROFILES_ACTIVE"
+        value: "prod"
+      # Set the server port for Render's health checks.
+      - key: "SERVER_PORT"
+        value: "10000"
+      # Construct the JDBC URL directly from Render's database properties.
+      - key: "SPRING_DATASOURCE_URL"
+        value: "jdbc:postgresql://${chat-database.host}:${chat-database.port}/${chat-database.database}"
+      - key: "SPRING_DATASOURCE_USERNAME"
         fromDatabase:
           name: "chat-database"
-          property: "connectionString"
+          property: "user"
+      - key: "SPRING_DATASOURCE_PASSWORD"
+        fromDatabase:
+          name: "chat-database"
+          property: "password"
       - key: "TOKEN_SIGNING_KEY"
         value: "413F4428472B4B6250655368566D5970337336763979244226452948404D6351"
