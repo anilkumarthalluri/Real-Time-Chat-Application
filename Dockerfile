@@ -2,7 +2,7 @@
 FROM maven:3.8.5-openjdk-17 AS build
 WORKDIR /app
 COPY . .
-# Run Maven with debug output
+# Run Maven with debug output to diagnose the build failure
 RUN mvn clean package -DskipTests -X
 
 # Stage 2: Create the final, smaller image
