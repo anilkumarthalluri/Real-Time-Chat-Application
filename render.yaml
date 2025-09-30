@@ -1,44 +1,39 @@
 # This is the configuration file for Render.
 # It defines all the services for your project.
 
-services:
-  # Service 1: The PostgreSQL Database
-  - type: postgres # CORRECTED: Was 'psql', now 'postgres'
-    name: chat-database
-    # The region should be close to you.
-    # Options: oregon, frankfurt, ohio, singapore
-    region: oregon
-    plan: free
+# Top-level key for databases
+databases:
+  - name: "chat-database"
+    region: "oregon"
+    plan: "free"
 
-  # Service 2: The Java Spring Boot Application
-  - type: web
-    name: real-time-chat-app
-    # This tells Render to use its native Java environment
-    env: java
-    region: oregon
-    plan: free
-    # Build and Start commands
+# Top-level key for services
+services:
+  # The Java Spring Boot Application
+  - type: "web"
+    name: "real-time-chat-app"
+    env: "java"
+    region: "oregon"
+    plan: "free"
     buildCommand: "./mvnw package"
     startCommand: "java -jar target/*.jar"
-    # Link the database to this web service
     envVars:
-      # This tells our app the URL of the database we just defined above.
-      # The value comes from the 'chat-database' service.
-      - key: SPRING_DATASOURCE_URL
+      # Set the Java version for the build (as a string)
+      - key: "JAVA_VERSION"
+        value: "17"
+      # Link the database to this web service.
+      - key: "SPRING_DATASOURCE_URL"
         fromDatabase:
-          name: chat-database
-          property: connectionString
-      # Set the Java version for the build
-      - key: JAVA_VERSION
-        value: 17
-      # Set your other secrets here.
-      - key: SPRING_DATASOURCE_USERNAME
+          name: "chat-database"
+          property: "jdbcConnectionString"
+      - key: "SPRING_DATASOURCE_USERNAME"
         fromDatabase:
-          name: chat-database
-          property: user
-      - key: SPRING_DATASOURCE_PASSWORD
+          name: "chat-database"
+          property: "user"
+      - key: "SPRING_DATASOURCE_PASSWORD"
         fromDatabase:
-          name: chat-database
-          property: password
-      - key: TOKEN_SIGNING_KEY
-        value: 413F4428472B4B6250655368566D5970337336763979244226452948404D6351
+          name: "chat-database"
+          property: "password"
+      # Set your other secrets (as a single-line string)
+      - key: "TOKEN_SIGNING_KEY"
+        value: "413F4428472B4B6250655368566D5970337336763979244226452948404D6351"
