@@ -7,21 +7,19 @@ services:
     dockerfilePath: ./Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        fromService:
-          type: postgres
+        fromDatabase:
           name: chat-db
           property: connectionString
       - key: SPRING_DATASOURCE_USERNAME
-        fromService:
-          type: postgres
+        fromDatabase:
           name: chat-db
           property: user
       - key: SPRING_DATASOURCE_PASSWORD
-        fromService:
-          type: postgres
+        fromDatabase:
           name: chat-db
           property: password
 
-  - type: postgres
+  - type: db
     name: chat-db
+    engine: postgres
     ipAllowList: [] # Allow all IPs to connect to the database
