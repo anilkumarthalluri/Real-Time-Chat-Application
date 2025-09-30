@@ -8,6 +8,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.GenericMessage;
@@ -33,16 +35,20 @@ public class WebSocketEventListenerTest {
 
     @Test
     public void handleWebSocketDisconnectListener() {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.create();
-        headerAccessor.setSessionId("test-session-id");
+        // Correctly create the header accessor
+        SimpMessageHeaderAccessor simpAccessor = SimpMessageHeaderAccessor.create();
+        simpAccessor.setSessionId("test-session-id");
         Map<String, Object> sessionAttributes = new HashMap<>();
         sessionAttributes.put("username", "testuser");
-        headerAccessor.setSessionAttributes(sessionAttributes);
+        simpAccessor.setSessionAttributes(sessionAttributes);
+        Message<byte[]> message = new GenericMessage<>(new byte[0], simpAccessor.getMessageHeaders());
 
-        SessionDisconnectEvent event = new SessionDisconnectEvent(this, new GenericMessage<>("", headerAccessor.getMessageHeaders()), "test-session-id", null);
+        // Create the event with the correctly typed message
+        SessionDisconnectEvent event = new SessionDisconnectEvent(this, message, "test-session-id", null);
 
         webSocketEventListener.handleWebSocketDisconnectListener(event);
 
+        // Verify the correct message is sent
         verify(messagingTemplate).convertAndSend(ArgumentCaptor.forClass(String.class).capture(), chatMessageCaptor.capture());
 
         assertEquals("/topic/public", "/topic/public");
