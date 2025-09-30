@@ -1,5 +1,4 @@
 # This is the configuration file for Render.
-# It defines all the services for your project.
 
 # Top-level key for databases
 databases:
@@ -12,28 +11,18 @@ services:
   # The Java Spring Boot Application
   - type: "web"
     name: "real-time-chat-app"
-    env: "java"
+    runtime: "java" # CORRECTED: Use 'runtime' instead of 'env'
     region: "oregon"
     plan: "free"
     buildCommand: "./mvnw package"
     startCommand: "java -jar target/*.jar"
     envVars:
-      # Set the Java version for the build (as a string)
+      # Set the Java version for the build
       - key: "JAVA_VERSION"
         value: "17"
-      # Link the database to this web service.
-      - key: "SPRING_DATASOURCE_URL"
-        fromDatabase:
-          name: "chat-database"
-          property: "jdbcConnectionString"
-      - key: "SPRING_DATASOURCE_USERNAME"
-        fromDatabase:
-          name: "chat-database"
-          property: "user"
-      - key: "SPRING_DATASOURCE_PASSWORD"
-        fromDatabase:
-          name: "chat-database"
-          property: "password"
-      # Set your other secrets (as a single-line string)
+      # Set your JWT secret key
       - key: "TOKEN_SIGNING_KEY"
         value: "413F4428472B4B6250655368566D5970337336763979244226452948404D6351"
+      # NOTE: We no longer need SPRING_DATASOURCE variables here.
+      # The postgresql-datasource-url-parser library and Render's
+      # default DATABASE_URL environment variable handle it automatically.
