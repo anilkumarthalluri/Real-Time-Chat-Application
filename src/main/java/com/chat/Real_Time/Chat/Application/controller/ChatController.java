@@ -2,7 +2,6 @@ package com.chat.Real_Time.Chat.Application.controller;
 
 import com.chat.Real_Time.Chat.Application.model.ChatMessage;
 import com.chat.Real_Time.Chat.Application.repository.ChatMessageRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -12,10 +11,13 @@ import org.springframework.stereotype.Controller;
 import java.util.Date;
 
 @Controller
-@RequiredArgsConstructor
 public class ChatController {
 
     private final ChatMessageRepository chatMessageRepository;
+
+    public ChatController(ChatMessageRepository chatMessageRepository) {
+        this.chatMessageRepository = chatMessageRepository;
+    }
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")

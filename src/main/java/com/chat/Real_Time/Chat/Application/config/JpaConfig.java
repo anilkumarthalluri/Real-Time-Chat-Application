@@ -4,12 +4,14 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 import javax.sql.DataSource;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 @Configuration
+@Profile("prod") // This is the crucial fix: Only use this class in the 'prod' environment (Render)
 public class JpaConfig {
 
     @Bean
@@ -17,7 +19,7 @@ public class JpaConfig {
     public DataSource dataSource() throws URISyntaxException {
         String databaseUrl = System.getenv("DATABASE_URL");
         if (databaseUrl == null) {
-            throw new IllegalStateException("DATABASE_URL environment variable is not set.");
+            throw new IllegalStateException("DATABASE_URL environment variable is not set for prod profile.");
         }
 
         URI dbUri = new URI(databaseUrl);
@@ -25,7 +27,6 @@ public class JpaConfig {
         String username = dbUri.getUserInfo().split(":")[0];
         String password = dbUri.getUserInfo().split(":")[1];
         
-        // Handle the case where the port is not specified in the URL
         int port = dbUri.getPort();
         if (port == -1) {
             port = 5432; // Default PostgreSQL port
