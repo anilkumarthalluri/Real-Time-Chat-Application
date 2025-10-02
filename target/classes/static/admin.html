@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .login-form, .user-list { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
+        input { width: 95%; padding: 8px; margin-bottom: 10px; }
+        button { padding: 10px 15px; cursor: pointer; }
+        #userInfo { font-weight: bold; color: green; }
+        ul { list-style-type: none; padding: 0; }
+        li { border-bottom: 1px solid #eee; padding: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <div class="login-form">
+            <h2>Login as Admin</h2>
+            <input type="email" id="email" placeholder="Admin Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button id="loginBtn">Login</button>
+            <p id="userInfo"></p>
+        </div>
+
+        <div class="user-list">
+            <h2>User Details</h2>
+            <button id="getUsersBtn" disabled>Fetch All Users</button>
+            <ul id="usersList"></ul>
+        </div>
+    </div>
+
+    <script src="/admin.js"></script>
+</body>
+</html>
