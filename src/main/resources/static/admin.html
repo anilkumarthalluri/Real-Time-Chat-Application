@@ -3,35 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Login</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 10 L90 30 L90 70 L50 90 L10 70 L10 30 Z' fill='%234285F4'/%3E%3C/svg%3E" type="image/svg+xml">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        .login-form, .user-list { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
-        input { width: 95%; padding: 8px; margin-bottom: 10px; }
-        button { padding: 10px 15px; cursor: pointer; }
-        #userInfo { font-weight: bold; color: green; }
-        ul { list-style-type: none; padding: 0; }
-        li { border-bottom: 1px solid #eee; padding: 10px 0; }
+        :root {
+            --primary-color: #4a90e2;
+            --danger-color: #e24a4a;
+            --background-color: #f4f7f6;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --subtle-text: #777;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        /* Login Form Styling */
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            background: var(--card-background);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .login-container h1 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--subtle-text);
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #password {
+            padding-right: 40px; /* Make space for the icon */
+        }
+
+        .password-toggle-icon {
+            position: absolute;
+            top: 40px; /* Adjust based on label height */
+            right: 12px;
+            cursor: pointer;
+            color: var(--subtle-text);
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .error-message {
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--danger-color);
+            text-align: center;
+        }
+
+        /* Dashboard Styling (hidden by default) */
+        .dashboard-container {
+            display: none; /* Hidden by default */
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+        }
+
+        .card {
+            background: var(--card-background);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            border-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #357abd;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #c82333;
+        }
+
+        .login-container .btn-primary {
+            width: 100%;
+        }
+
+        #userTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #userTable th,
+        #userTable td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #userTable th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--subtle-text);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        #userTable tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        .role-badge, #user-count-badge {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        #user-count-badge {
+            font-size: 1rem;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Dashboard</h1>
-
-        <div class="login-form">
-            <h2>Login as Admin</h2>
-            <input type="email" id="email" placeholder="Admin Email" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <button id="loginBtn">Login</button>
-            <p id="userInfo"></p>
+    <!-- Login Form Container -->
+    <div id="login-container" class="login-container">
+        <h1>Admin Login</h1>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
         </div>
-
-        <div class="user-list">
-            <h2>User Details</h2>
-            <button id="getUsersBtn" disabled>Fetch All Users</button>
-            <ul id="usersList"></ul>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            <span id="password-toggle-icon" class="password-toggle-icon fas fa-eye"></span>
         </div>
+        <button id="loginBtn" class="btn btn-primary">Login</button>
+        <p id="login-error" class="error-message"></p>
+    </div>
+
+    <!-- Main Dashboard Container (hidden by default) -->
+    <div id="dashboard-container" class="container dashboard-container">
+        <header>
+            <h1>Admin Dashboard</h1>
+        </header>
+        <main>
+            <div class="card">
+                <h2>
+                    <span>User Management</span>
+                    <span id="user-count-badge">0</span>
+                </h2>
+                <button id="getUsersBtn" class="btn btn-secondary">Refresh Users</button>
+                <table id="userTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <!-- User rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
     </div>
 
     <script src="/admin.js"></script>

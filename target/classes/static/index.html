@@ -5,58 +5,99 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/main.css">
+    <style>
+        .password-toggle {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .password-toggle input {
+            margin-right: 8px;
+        }
+        #message {
+            resize: none;
+            overflow-y: auto;
+            max-height: 120px; /* Limit max height */
+            min-height: 45px; /* Ensure it doesn't get too small */
+            box-sizing: border-box;
+        }
+    </style>
 </head>
 <body>
 
 <div id="login-page">
-    <div class="login-page-container">
-        <div id="login-form">
-            <h1 class="title">Real Time Chat Application</h1>
-            <p class="subtitle">Login to chat with your friends</p>
-            <form id="loginForm" name="loginForm">
-                <div class="form-group">
-                    <input type="text" id="login-email" placeholder="Email" autocomplete="off" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <input type="password" id="login-password" placeholder="Password" autocomplete="off" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="accent-button">Login</button>
-                </div>
-            </form>
-            <p>Don't have an account? <a href="#" id="show-signup">Sign up</a></p>
+    <div class="login-wrapper">
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <h1>Connect Instantly</h1>
+            <p>Join the conversation and chat with friends in real-time.</p>
         </div>
 
-        <div id="signup-form" class="hidden">
-            <h1 class="title">Real Time Chat Application</h1>
-            <p class="subtitle">Sign up to chat with your friends</p>
-            <form id="signupForm" name="signupForm">
-                <div class="form-group">
-                    <input type="text" id="signup-firstname" placeholder="First Name" autocomplete="off" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <input type="text" id="signup-lastname" placeholder="Last Name" autocomplete="off" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <input type="text" id="signup-email" placeholder="Email" autocomplete="off" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <input type="password" id="signup-password" placeholder="Password" autocomplete="off" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="accent-button">Sign Up</button>
-                </div>
-            </form>
-            <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+        <!-- Form Panel -->
+        <div class="form-panel">
+            <!-- Login Form -->
+            <div id="login-form">
+                <h1 class="title">Welcome Back!</h1>
+                <p class="subtitle">Login to continue</p>
+                <form id="loginForm" name="loginForm">
+                    <div class="form-group">
+                        <input type="text" id="login-email" placeholder="Email" autocomplete="off" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="login-password" placeholder="Password" autocomplete="off" class="form-control" />
+                        <div class="password-toggle">
+                            <input type="checkbox" id="show-login-password">
+                            <label for="show-login-password">Show Password</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="accent-button">Login</button>
+                    </div>
+                </form>
+                <p class="form-switcher">Don't have an account? <a href="#" id="show-signup">Sign up</a></p>
+            </div>
+
+            <!-- Signup Form (hidden by default) -->
+            <div id="signup-form" class="hidden">
+                <h1 class="title">Create Account</h1>
+                <p class="subtitle">Get started with a new account</p>
+                <form id="signupForm" name="signupForm">
+                    <div class="form-group">
+                        <input type="text" id="signup-firstname" placeholder="First Name" autocomplete="off" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="signup-lastname" placeholder="Last Name" autocomplete="off" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="signup-email" placeholder="Email" autocomplete="off" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="signup-password" placeholder="Password" autocomplete="off" class="form-control" />
+                        <div class="password-toggle">
+                            <input type="checkbox" id="show-signup-password">
+                            <label for="show-signup-password">Show Password</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="accent-button">Sign Up</button>
+                    </div>
+                </form>
+                <p class="form-switcher">Already have an account? <a href="#" id="show-login">Login</a></p>
+            </div>
         </div>
     </div>
 </div>
 
-<div id="chat-page" class="hidden">
+<div id="chat-page">
     <div class="chat-container">
         <div class="chat-header">
-            <h2>Real Time Chat Application</h2>
-            <p class="subtitle">Chat with your friends</p>
+            <h2>Real Time Chat</h2>
+            <div class="user-profile">
+                <span id="username-display"></span>
+                <button id="logoutBtn">Logout</button>
+            </div>
         </div>
         <div class="connecting">
             Connecting...
@@ -67,9 +108,9 @@
         <div id="typing-indicator"></div>
         <form id="messageForm" name="messageForm">
             <div class="form-group">
-                <div class="input-group clearfix">
-                    <input type="text" id="message" placeholder="Type a message..." autocomplete="off" class="form-control"/>
-                    <button type="submit" class="primary">Send</button>
+                <div class="input-group">
+                    <textarea id="message" placeholder="Type a message..." class="form-control" rows="1"></textarea>
+                    <button type="submit" class="accent-button">Send</button>
                 </div>
             </div>
         </form>
