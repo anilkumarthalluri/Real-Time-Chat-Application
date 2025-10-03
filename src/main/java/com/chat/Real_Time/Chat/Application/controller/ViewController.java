@@ -8,6 +8,11 @@ public class ViewController {
 
     @GetMapping("/")
     public String index() {
-        return "redirect:/index.html";
+        return "forward:/index.html";
+    }
+
+    @GetMapping("/admin")
+    public String admin() {
+        return "forward:/admin.html";
     }
 }

@@ -1,9 +1,5 @@
 'use strict';
 
-// Page selectors
-var loginPage = document.querySelector('#login-page');
-var chatPage = document.querySelector('#chat-page');
-
 // Form selectors
 var loginForm = document.querySelector('#loginForm');
 var signupForm = document.querySelector('#signupForm');
@@ -16,18 +12,20 @@ var messageInput = document.querySelector('#message');
 var messageArea = document.querySelector('#messageArea');
 var connectingElement = document.querySelector('.connecting');
 var typingIndicator = document.querySelector('#typing-indicator');
+var usernameDisplay = document.querySelector('#username-display');
 
 // Toggles
 var showSignup = document.querySelector('#show-signup');
 var showLogin = document.querySelector('#show-login');
+var logoutBtn = document.querySelector('#logoutBtn');
 
 var stompClient = null;
 var username = null;
 var jwtToken = null;
 
 var colors = [
-    '#2196F3', '#32c787', '#00BCD4', '#ff5652',
-    '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
+    '#F44336', '#E91E63', '#9C27B0', '#673AB7',
+    '#3F51B5', '#2196F3', '#009688', '#FF9800'
 ];
 
 // Typing indicator state
@@ -42,24 +40,40 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedToken) {
         try {
             const tokenPayload = parseJwt(savedToken);
-            // Check if token is expired
             if (tokenPayload.exp * 1000 < Date.now()) {
                 localStorage.removeItem('jwt');
-                return; // Token is expired, do nothing
+                return;
             }
 
             jwtToken = savedToken;
             username = tokenPayload.firstname + ' ' + tokenPayload.lastname;
 
-            loginPage.classList.add('hidden');
-            chatPage.classList.remove('hidden');
-            
+            document.body.classList.add('chat-active');
+            usernameDisplay.textContent = username;
+
             fetchChatHistory();
             connect();
         } catch (e) {
-            // If token is invalid for any reason, clear it
             localStorage.removeItem('jwt');
         }
+    }
+
+    // --- Show Password Logic ---
+    const loginPasswordInput = document.querySelector('#login-password');
+    const showLoginPasswordCheckbox = document.querySelector('#show-login-password');
+    const signupPasswordInput = document.querySelector('#signup-password');
+    const showSignupPasswordCheckbox = document.querySelector('#show-signup-password');
+
+    if (showLoginPasswordCheckbox) {
+        showLoginPasswordCheckbox.addEventListener('change', () => {
+            loginPasswordInput.type = showLoginPasswordCheckbox.checked ? 'text' : 'password';
+        });
+    }
+
+    if (showSignupPasswordCheckbox) {
+        showSignupPasswordCheckbox.addEventListener('change', () => {
+            signupPasswordInput.type = showSignupPasswordCheckbox.checked ? 'text' : 'password';
+        });
     }
 });
 
@@ -76,12 +90,15 @@ showLogin.addEventListener('click', () => {
 loginForm.addEventListener('submit', login, true);
 signupForm.addEventListener('submit', signup, true);
 messageForm.addEventListener('submit', sendMessage, true);
+logoutBtn.addEventListener('click', logout, true);
 
 messageInput.addEventListener('input', handleTyping);
+messageInput.addEventListener('keydown', handleMessageSend);
 
 // --- Typing Functions ---
 
 function handleTyping() {
+    autoResize(messageInput);
     if (!isTyping) {
         isTyping = true;
         stompClient.send("/app/chat.typing", {}, JSON.stringify({ sender: username, type: 'TYPING' }));
@@ -90,7 +107,7 @@ function handleTyping() {
     typingTimer = setTimeout(() => {
         isTyping = false;
         stompClient.send("/app/chat.typing", {}, JSON.stringify({ sender: username, type: 'STOP_TYPING' }));
-    }, 1000); // 1 second timeout
+    }, 1000);
 }
 
 function updateTypingIndicator() {
@@ -167,13 +184,21 @@ function login(event) {
         const tokenPayload = parseJwt(jwtToken);
         username = tokenPayload.firstname + ' ' + tokenPayload.lastname;
 
-        loginPage.classList.add('hidden');
-        chatPage.classList.remove('hidden');
-        
+        document.body.classList.add('chat-active');
+        usernameDisplay.textContent = username;
+
         fetchChatHistory();
         connect();
     })
     .catch(error => alert(error.message));
+}
+
+function logout() {
+    if (stompClient) {
+        stompClient.disconnect();
+    }
+    localStorage.removeItem('jwt');
+    location.reload();
 }
 
 // --- Chat History ---
@@ -193,7 +218,7 @@ function fetchChatHistory() {
         messages.forEach(message => {
             displayMessage(message, false);
         });
-        messageArea.scrollTop = 0;
+        messageArea.scrollTop = messageArea.scrollHeight;
     })
     .catch(error => console.error(error));
 }
@@ -222,6 +247,13 @@ function onError(error) {
     connectingElement.style.color = 'red';
 }
 
+function handleMessageSend(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage(event);
+    }
+}
+
 function sendMessage(event) {
     var messageContent = messageInput.value.trim();
     if (messageContent && stompClient) {
@@ -232,6 +264,7 @@ function sendMessage(event) {
         };
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
+        autoResize(messageInput); // Reset height
     }
     event.preventDefault();
 }
@@ -252,8 +285,6 @@ function onMessageReceived(payload) {
 }
 
 function displayMessage(message, shouldScroll) {
-    const isScrolledToBottom = messageArea.scrollTop === 0;
-
     var messageElement = document.createElement('li');
 
     if (message.type === 'JOIN' || message.type === 'LEAVE') {
@@ -261,26 +292,37 @@ function displayMessage(message, shouldScroll) {
         var text = message.sender + (message.type === 'JOIN' ? ' joined!' : ' left!');
         messageElement.innerHTML = `<p>${text}</p>`;
     } else if (message.type === 'CHAT') {
-        messageElement.classList.add('chat-message');
+        var bubbleElement = document.createElement('div');
+        bubbleElement.classList.add('chat-message');
+
         if (message.sender === username) {
             messageElement.classList.add('sender');
+            bubbleElement.classList.add('sender');
+            bubbleElement.style.backgroundColor = '#DCF8C6';
+            bubbleElement.style.color = '#212529';
+            bubbleElement.innerHTML = `<p>${message.content}</p>`;
         } else {
             messageElement.classList.add('receiver');
+            bubbleElement.classList.add('receiver');
+            bubbleElement.style.backgroundColor = '#FFFFFF';
+            bubbleElement.style.color = '#212529';
+
+            var userColor = getAvatarColor(message.sender);
+            var avatarChar = message.sender[0];
+
+            bubbleElement.innerHTML =
+                `<i style="background-color: ${userColor}; color: #FFFFFF">${avatarChar}</i>
+                <span>${message.sender}</span>
+                <p>${message.content}</p>`;
         }
 
-        var avatarColor = getAvatarColor(message.sender);
-        var avatarChar = message.sender[0];
-
-        messageElement.innerHTML = 
-            `<i style="background-color: ${avatarColor}">${avatarChar}</i>
-            <span>${message.sender}</span>
-            <p>${message.content}</p>`;
+        messageElement.appendChild(bubbleElement);
     }
 
-    messageArea.insertBefore(messageElement, messageArea.firstChild);
+    messageArea.appendChild(messageElement);
 
-    if (shouldScroll && isScrolledToBottom) {
-        messageArea.scrollTop = 0;
+    if (shouldScroll) {
+        messageArea.scrollTop = messageArea.scrollHeight;
     }
 }
 
@@ -302,4 +344,9 @@ function parseJwt(token) {
     } catch (e) {
         return null;
     }
+}
+
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
 }

@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -28,9 +29,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, 
-                                    @NonNull HttpServletResponse response, 
-                                    @NonNull FilterChain filterChain) 
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        AntPathMatcher pathMatcher = new AntPathMatcher();
+        return pathMatcher.match("/api/v1/auth/**", path) ||
+               pathMatcher.match("/", path) ||
+               pathMatcher.match("/index.html", path) ||
+               pathMatcher.match("/admin", path) ||
+               pathMatcher.match("/admin.html", path) ||
+               pathMatcher.match("/main.js", path) ||
+               pathMatcher.match("/main.css", path) ||
+               pathMatcher.match("/admin.js", path) ||
+               pathMatcher.match("/ws/**", path);
+    }
+
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
@@ -48,8 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, 
-                        null, 
+                        userDetails,
+                        null,
                         userDetails.getAuthorities()
                 );
                 authToken.setDetails(
