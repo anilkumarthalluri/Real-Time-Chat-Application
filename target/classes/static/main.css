@@ -1,12 +1,13 @@
 :root {
-    --whatsapp-green-dark: #075E54;
-    --whatsapp-green-mid: #128C7E;
-    --whatsapp-green-light: #25D366;
-    --whatsapp-bubble-sender: #DCF8C6;
-    --whatsapp-bubble-receiver: #FFFFFF;
-    --whatsapp-background: #E5DDD5;
+    --theme-color-dark: #005c91;
+    --theme-color-mid: #007bff;
+    --theme-color-light: #3399ff;
+    --theme-bubble-sender: #cfe2ff;
+    --theme-bubble-receiver: #FFFFFF;
+    --theme-chat-background: #F5F8FF;
+    --theme-background: #FFFFFF;
 
-    --primary-color: var(--whatsapp-green-light);
+    --primary-color: var(--theme-color-mid);
     --secondary-color: #6c757d;
     --text-color: #212529;
     --subtle-text: #6c757d;
@@ -16,17 +17,10 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: var(--whatsapp-background);
+    background-color: var(--theme-background);
     color: var(--text-color);
     margin: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
-    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAEUlEQVQ4jWNgYGD4z0A6+GCEsQAAAABJRU5ErkJggg==");
-    background-repeat: repeat;
-}
-
-body.chat-active {
-    background-color: #FFFFFF;
-    background-image: none;
 }
 
 .hidden {
@@ -68,7 +62,7 @@ body.chat-active #login-page {
 
 .info-panel {
     flex-basis: 50%;
-    background: var(--whatsapp-green-dark);
+    background: var(--theme-color-dark);
     color: white;
     padding: 60px 40px;
     display: flex;
@@ -122,7 +116,7 @@ body.chat-active #login-page {
 .form-control:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
 .accent-button {
@@ -139,7 +133,7 @@ body.chat-active #login-page {
 }
 
 .accent-button:hover {
-    background-color: #1DA851; /* Darker green */
+    background-color: #0069d9; /* Darker blue */
     transform: translateY(-1px);
 }
 
@@ -170,7 +164,7 @@ body.chat-active #login-page {
 }
 
 .chat-header {
-    background: var(--whatsapp-green-dark);
+    background: var(--theme-color-dark);
     color: white;
     padding: 15px 20px;
     text-align: center;
@@ -207,7 +201,7 @@ body.chat-active #login-page {
 
 #logoutBtn:hover {
     background-color: white;
-    color: var(--whatsapp-green-dark);
+    color: var(--theme-color-dark);
 }
 
 .connecting {
@@ -224,8 +218,7 @@ body.chat-active #login-page {
     margin: 0;
     display: flex;
     flex-direction: column;
-    background-color: #F0F2F5;
-    background-image: none;
+    background-color: var(--theme-chat-background);
 }
 
 #messageArea li {
@@ -262,12 +255,12 @@ li.receiver {
 }
 
 .chat-message.sender {
-    background-color: var(--whatsapp-bubble-sender);
+    background-color: var(--theme-bubble-sender);
     color: var(--text-color);
 }
 
 .chat-message.receiver {
-    background-color: var(--whatsapp-bubble-receiver);
+    background-color: var(--theme-bubble-receiver);
     color: var(--text-color);
 }
 
