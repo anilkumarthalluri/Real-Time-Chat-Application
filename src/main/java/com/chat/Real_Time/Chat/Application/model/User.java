@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "app_user")
@@ -29,6 +30,9 @@ public class User implements UserDetails {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    private String passwordResetToken;
+    private LocalDateTime passwordResetTokenExpiration;
 
     public User() {
     }
@@ -101,6 +105,22 @@ public class User implements UserDetails {
         this.createdAt = createdAt;
     }
 
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
+
+    public LocalDateTime getPasswordResetTokenExpiration() {
+        return passwordResetTokenExpiration;
+    }
+
+    public void setPasswordResetTokenExpiration(LocalDateTime passwordResetTokenExpiration) {
+        this.passwordResetTokenExpiration = passwordResetTokenExpiration;
+    }
+
     // UserDetails methods
 
     @Override
@@ -134,5 +154,35 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) &&
+                Objects.equals(firstname, user.firstname) &&
+                Objects.equals(lastname, user.lastname) &&
+                Objects.equals(email, user.email) &&
+                role == user.role &&
+                Objects.equals(createdAt, user.createdAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstname, lastname, email, role, createdAt);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }

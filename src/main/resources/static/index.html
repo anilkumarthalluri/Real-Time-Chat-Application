@@ -57,6 +57,7 @@
                     </div>
                 </form>
                 <p class="form-switcher">Don't have an account? <a href="#" id="show-signup">Sign up</a></p>
+                <p class="form-switcher" style="margin-top: 10px;"><a href="#" id="forgot-password-link">Forgot password?</a></p>
             </div>
 
             <!-- Signup Form (hidden by default) -->
@@ -85,6 +86,21 @@
                     </div>
                 </form>
                 <p class="form-switcher">Already have an account? <a href="#" id="show-login">Login</a></p>
+            </div>
+
+            <!-- Forgot Password Form (hidden by default) -->
+            <div id="forgot-password-form" class="hidden">
+                <h1 class="title">Reset Password</h1>
+                <p class="subtitle">Enter your email to receive a reset link</p>
+                <form id="forgotPasswordForm" name="forgotPasswordForm">
+                    <div class="form-group">
+                        <input type="text" id="forgot-email" placeholder="Email" autocomplete="off" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="accent-button">Send Reset Link</button>
+                    </div>
+                </form>
+                <p class="form-switcher">Remembered your password? <a href="#" id="show-login-from-forgot">Login</a></p>
             </div>
         </div>
     </div>
