@@ -24,8 +24,8 @@ var username = null;
 var jwtToken = null;
 
 var colors = [
-    '#F44336', '#E91E63', '#9C27B0', '#673AB7',
-    '#3F51B5', '#2196F3', '#009688', '#FF9800'
+    '#2196F3', '#3F51B5', '#007BFF', '#00BCD4',
+    '#17A2B8', '#009688', '#39BBB0', '#4DB6AC'
 ];
 
 // Typing indicator state
@@ -298,21 +298,17 @@ function displayMessage(message, shouldScroll) {
         if (message.sender === username) {
             messageElement.classList.add('sender');
             bubbleElement.classList.add('sender');
-            bubbleElement.style.backgroundColor = '#DCF8C6';
-            bubbleElement.style.color = '#212529';
             bubbleElement.innerHTML = `<p>${message.content}</p>`;
         } else {
             messageElement.classList.add('receiver');
             bubbleElement.classList.add('receiver');
-            bubbleElement.style.backgroundColor = '#FFFFFF';
-            bubbleElement.style.color = '#212529';
 
             var userColor = getAvatarColor(message.sender);
             var avatarChar = message.sender[0];
 
             bubbleElement.innerHTML =
                 `<i style="background-color: ${userColor}; color: #FFFFFF">${avatarChar}</i>
-                <span>${message.sender}</span>
+                <span style="color: ${userColor}">${message.sender}</span>
                 <p>${message.content}</p>`;
         }
 
