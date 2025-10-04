@@ -1,15 +1,18 @@
+# Compiled Java class files
+target/
+*.class
 
+# Log files
+*.log
 
-    # Local configuration files
-    src/main/resources/application-dev.properties
-    src/main/resources/application.properties
+# IDE configuration files
+.idea/
+*.iml
+*.project
+*.classpath
+.settings/
 
-    # Log files
-    *.log
-
-    # Maven build output
-    target/
-
-    # IDE files
-    .idea/
-    *.iml
+# Secrets and local configuration files
+# These should be set as environment variables in your deployment environment
+src/main/resources/application.properties
+src/main/resources/application-dev.properties
