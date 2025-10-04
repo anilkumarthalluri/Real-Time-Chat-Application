@@ -3,6 +3,7 @@
 // Form selectors
 var loginForm = document.querySelector('#loginForm');
 var signupForm = document.querySelector('#signupForm');
+var forgotPasswordForm = document.querySelector('#forgotPasswordForm');
 var messageForm = document.querySelector('#messageForm');
 
 // Input selectors
@@ -17,6 +18,8 @@ var usernameDisplay = document.querySelector('#username-display');
 // Toggles
 var showSignup = document.querySelector('#show-signup');
 var showLogin = document.querySelector('#show-login');
+var forgotPasswordLink = document.querySelector('#forgot-password-link');
+var showLoginFromForgot = document.querySelector('#show-login-from-forgot');
 var logoutBtn = document.querySelector('#logoutBtn');
 
 var stompClient = null;
@@ -32,6 +35,14 @@ var colors = [
 var typingTimer = null;
 var isTyping = false;
 var activeTypers = [];
+
+// --- Helper to switch between forms ---
+function showForm(formId) {
+    document.getElementById('login-form').classList.add('hidden');
+    document.getElementById('signup-form').classList.add('hidden');
+    document.getElementById('forgot-password-form').classList.add('hidden');
+    document.getElementById(formId).classList.remove('hidden');
+}
 
 // --- Event Listeners ---
 
@@ -77,18 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-showSignup.addEventListener('click', () => {
-    document.getElementById('login-form').classList.add('hidden');
-    document.getElementById('signup-form').classList.remove('hidden');
-});
-
-showLogin.addEventListener('click', () => {
-    document.getElementById('signup-form').classList.add('hidden');
-    document.getElementById('login-form').classList.remove('hidden');
-});
+showSignup.addEventListener('click', () => showForm('signup-form'));
+showLogin.addEventListener('click', () => showForm('login-form'));
+forgotPasswordLink.addEventListener('click', () => showForm('forgot-password-form'));
+showLoginFromForgot.addEventListener('click', () => showForm('login-form'));
 
 loginForm.addEventListener('submit', login, true);
 signupForm.addEventListener('submit', signup, true);
+forgotPasswordForm.addEventListener('submit', forgotPassword, true);
 messageForm.addEventListener('submit', sendMessage, true);
 logoutBtn.addEventListener('click', logout, true);
 
@@ -149,7 +156,7 @@ function signup(event) {
             throw new Error('Signup failed');
         }
         alert('Signup successful! Please login.');
-        showLogin.click();
+        showForm('login-form');
     })
     .catch(error => alert(error.message));
 }
@@ -191,6 +198,39 @@ function login(event) {
         connect();
     })
     .catch(error => alert(error.message));
+}
+
+function forgotPassword(event) {
+    event.preventDefault();
+    const email = document.querySelector('#forgot-email').value.trim();
+
+    if (!email) {
+        alert('Email is required.');
+        return;
+    }
+
+    const forgotPasswordRequest = { email };
+
+    fetch('/api/v1/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(forgotPasswordRequest)
+    })
+    .then(response => {
+        if (!response.ok) {
+            // Don't reveal if the email exists or not for security reasons
+            throw new Error('Request failed.');
+        }
+        return response.text();
+    })
+    .then(message => {
+        alert(message || 'If an account with that email exists, a password reset link has been sent.');
+        showForm('login-form');
+    })
+    .catch(error => {
+        console.error(error);
+        alert('An error occurred. Please try again.');
+    });
 }
 
 function logout() {
