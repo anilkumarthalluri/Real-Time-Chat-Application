@@ -36,8 +36,19 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/v1/auth/**", "/", "/index.html", "/main.js", "/main.css", "/ws/**", "/admin", "/admin.html", "/admin.js")
-                                .permitAll()
+                        auth.requestMatchers(
+                                        "/api/v1/auth/**",
+                                        "/",
+                                        "/index.html",
+                                        "/main.js",
+                                        "/main.css",
+                                        "/reset-password.html",
+                                        "/reset-password.js",
+                                        "/ws/**",
+                                        "/admin",
+                                        "/admin.html",
+                                        "/admin.js"
+                                ).permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )

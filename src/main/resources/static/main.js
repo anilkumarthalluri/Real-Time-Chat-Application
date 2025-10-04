@@ -201,15 +201,18 @@ function login(event) {
 }
 
 function forgotPassword(event) {
+    console.log('--- Forgot Password Attempt ---');
     event.preventDefault();
     const email = document.querySelector('#forgot-email').value.trim();
+    console.log('Email value found:', email);
 
     if (!email) {
-        alert('Email is required.');
+        console.error('Email field is empty. Aborting.');
         return;
     }
 
     const forgotPasswordRequest = { email };
+    console.log('Sending fetch request to backend...');
 
     fetch('/api/v1/auth/forgot-password', {
         method: 'POST',
@@ -217,19 +220,18 @@ function forgotPassword(event) {
         body: JSON.stringify(forgotPasswordRequest)
     })
     .then(response => {
+        console.log('Received response from backend:', response);
         if (!response.ok) {
-            // Don't reveal if the email exists or not for security reasons
-            throw new Error('Request failed.');
+            throw new Error('Backend returned an error: ' + response.status);
         }
         return response.text();
     })
     .then(message => {
-        alert(message || 'If an account with that email exists, a password reset link has been sent.');
+        console.log('Success:', message || 'Request successful. Check backend logs for email link.');
         showForm('login-form');
     })
     .catch(error => {
-        console.error(error);
-        alert('An error occurred. Please try again.');
+        console.error('Fetch failed:', error);
     });
 }
 
