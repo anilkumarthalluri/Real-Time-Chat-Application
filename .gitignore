@@ -1,5 +1,4 @@
 
-application.properties
 
     # Local configuration files
     src/main/resources/application-dev.properties
