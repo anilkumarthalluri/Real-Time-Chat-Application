@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
@@ -19,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,9 +49,8 @@ public class WebSocketEventListenerTest {
         webSocketEventListener.handleWebSocketDisconnectListener(event);
 
         // Verify the correct message is sent
-        verify(messagingTemplate).convertAndSend(ArgumentCaptor.forClass(String.class).capture(), chatMessageCaptor.capture());
+        verify(messagingTemplate).convertAndSend(eq("/topic/public"), chatMessageCaptor.capture());
 
-        assertEquals("/topic/public", "/topic/public");
         ChatMessage capturedChatMessage = chatMessageCaptor.getValue();
         assertEquals(ChatMessage.MessageType.LEAVE, capturedChatMessage.getType());
         assertEquals("testuser", capturedChatMessage.getSender());
