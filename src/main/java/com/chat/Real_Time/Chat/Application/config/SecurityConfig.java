@@ -38,13 +38,22 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(
                                         "/api/v1/auth/**",
+                                        // SPA routes
                                         "/",
+                                        "/login",
+                                        "/signup",
+                                        "/forgot-password",
+                                        "/chat",
+                                        "/reset-password",
+                                        // Static resources
                                         "/index.html",
                                         "/main.js",
                                         "/main.css",
                                         "/reset-password.html",
                                         "/reset-password.js",
+                                        // WebSocket
                                         "/ws/**",
+                                        // Admin (if any)
                                         "/admin",
                                         "/admin.html",
                                         "/admin.js"
