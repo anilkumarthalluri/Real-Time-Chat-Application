@@ -8,6 +8,8 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 public class EmailServiceImpl implements EmailService {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     @Value("${SENDGRID_API_KEY}")
     private String sendGridApiKey;
@@ -34,19 +38,13 @@ public class EmailServiceImpl implements EmailService {
         Email toEmail = new Email(to);
 
         try {
-            // Load the HTML template from the classpath
             ClassPathResource resource = new ClassPathResource("password-reset-template.html");
             String htmlTemplate = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
-            // Create the unique reset link
             String resetLink = frontendUrl + "/reset-password.html?token=" + token;
-
-            // Replace the placeholder in the template with the actual link
             String finalHtml = htmlTemplate.replace("{{RESET_LINK}}", resetLink);
 
-            // Set the content type to HTML
             Content content = new Content("text/html", finalHtml);
-
             Mail mail = new Mail(from, subject, toEmail, content);
             SendGrid sg = new SendGrid(sendGridApiKey);
             Request request = new Request();
@@ -58,13 +56,15 @@ public class EmailServiceImpl implements EmailService {
             Response response = sg.api(request);
 
             if (response.getStatusCode() < 200 || response.getStatusCode() >= 300) {
-                System.err.println("SendGrid returned a non-successful status code: " + response.getStatusCode());
-                System.err.println("Response Body: " + response.getBody());
+                logger.error("SendGrid returned a non-successful status code: {}", response.getStatusCode());
+                logger.error("Response Body: {}", response.getBody());
                 throw new IOException("SendGrid request failed with status code: " + response.getStatusCode());
             }
 
+            logger.info("Password reset email sent successfully to {}", to);
+
         } catch (IOException ex) {
-            System.err.println("Error sending email: " + ex.getMessage());
+            logger.error("Error sending password reset email: {}", ex.getMessage());
             throw new RuntimeException("Failed to send password reset email.", ex);
         }
     }
