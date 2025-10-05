@@ -36,12 +36,40 @@ var typingTimer = null;
 var isTyping = false;
 var activeTypers = [];
 
-// --- Helper to switch between forms ---
+// --- Client-Side Router ---
+
+const routes = {
+    '/': 'login-form',
+    '/login': 'login-form',
+    '/signup': 'signup-form',
+    '/forgot-password': 'forgot-password-form'
+};
+
 function showForm(formId) {
     document.getElementById('login-form').classList.add('hidden');
     document.getElementById('signup-form').classList.add('hidden');
     document.getElementById('forgot-password-form').classList.add('hidden');
-    document.getElementById(formId).classList.remove('hidden');
+    
+    const formToShow = document.getElementById(formId);
+    if (formToShow) {
+        formToShow.classList.remove('hidden');
+    }
+}
+
+function handleLocation() {
+    const path = window.location.pathname;
+    // If user is logged in (chat is active), don't show login forms
+    if (document.body.classList.contains('chat-active')) {
+        return;
+    }
+    const formId = routes[path] || 'login-form';
+    showForm(formId);
+}
+
+function navigate(event, path) {
+    event.preventDefault();
+    window.history.pushState({}, '', path);
+    handleLocation();
 }
 
 // --- Event Listeners ---
@@ -53,6 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const tokenPayload = parseJwt(savedToken);
             if (tokenPayload.exp * 1000 < Date.now()) {
                 localStorage.removeItem('jwt');
+                // If token is expired, handle location to show login page
+                handleLocation();
                 return;
             }
 
@@ -66,8 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
             connect();
         } catch (e) {
             localStorage.removeItem('jwt');
+            handleLocation();
         }
+    } else {
+        // If no token, handle location to show the correct form
+        handleLocation();
     }
+
+    // Handle browser back/forward
+    window.onpopstate = handleLocation;
 
     // --- Show Password Logic ---
     const loginPasswordInput = document.querySelector('#login-password');
@@ -88,10 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-showSignup.addEventListener('click', () => showForm('signup-form'));
-showLogin.addEventListener('click', () => showForm('login-form'));
-forgotPasswordLink.addEventListener('click', () => showForm('forgot-password-form'));
-showLoginFromForgot.addEventListener('click', () => showForm('login-form'));
+// Update navigation links
+showSignup.addEventListener('click', (e) => navigate(e, '/signup'));
+showLogin.addEventListener('click', (e) => navigate(e, '/login'));
+forgotPasswordLink.addEventListener('click', (e) => navigate(e, '/forgot-password'));
+showLoginFromForgot.addEventListener('click', (e) => navigate(e, '/login'));
 
 loginForm.addEventListener('submit', login, true);
 signupForm.addEventListener('submit', signup, true);
@@ -156,7 +194,9 @@ function signup(event) {
             throw new Error('Signup failed');
         }
         alert('Signup successful! Please login.');
-        showForm('login-form');
+        // Navigate to login page
+        window.history.pushState({}, '', '/login');
+        handleLocation();
     })
     .catch(error => alert(error.message));
 }
@@ -191,6 +231,8 @@ function login(event) {
         const tokenPayload = parseJwt(jwtToken);
         username = tokenPayload.firstname + ' ' + tokenPayload.lastname;
 
+        // Navigate to chat page
+        window.history.pushState({}, '', '/chat');
         document.body.classList.add('chat-active');
         usernameDisplay.textContent = username;
 
@@ -252,7 +294,10 @@ function logout() {
         stompClient.disconnect();
     }
     localStorage.removeItem('jwt');
-    location.reload();
+    // Instead of reload, navigate to login
+    window.history.pushState({}, '', '/login');
+    document.body.classList.remove('chat-active');
+    handleLocation();
 }
 
 // --- Chat History ---
