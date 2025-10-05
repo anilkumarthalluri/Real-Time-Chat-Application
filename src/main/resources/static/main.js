@@ -201,18 +201,26 @@ function login(event) {
 }
 
 function forgotPassword(event) {
-    console.log('--- Forgot Password Attempt ---');
     event.preventDefault();
     const email = document.querySelector('#forgot-email').value.trim();
-    console.log('Email value found:', email);
+    const resetLinkSentMessage = document.querySelector('#reset-link-sent-message');
+    const forgotPasswordError = document.querySelector('#forgot-password-error');
+
+    // Hide previous messages
+    resetLinkSentMessage.classList.add('hidden');
+    forgotPasswordError.classList.add('hidden');
 
     if (!email) {
-        console.error('Email field is empty. Aborting.');
+        forgotPasswordError.textContent = 'Email is required.';
+        forgotPasswordError.classList.remove('hidden');
         return;
     }
 
     const forgotPasswordRequest = { email };
-    console.log('Sending fetch request to backend...');
+
+    const submitButton = forgotPasswordForm.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Sending...';
 
     fetch('/api/v1/auth/forgot-password', {
         method: 'POST',
@@ -220,18 +228,22 @@ function forgotPassword(event) {
         body: JSON.stringify(forgotPasswordRequest)
     })
     .then(response => {
-        console.log('Received response from backend:', response);
         if (!response.ok) {
-            throw new Error('Backend returned an error: ' + response.status);
+            return response.text().then(text => { throw new Error(text || 'Failed to send reset link.') });
         }
         return response.text();
     })
-    .then(message => {
-        console.log('Success:', message || 'Request successful. Check backend logs for email link.');
-        showForm('login-form');
+    .then(() => {
+        resetLinkSentMessage.classList.remove('hidden');
+        document.querySelector('#forgot-email').value = ''; // Clear input
     })
     .catch(error => {
-        console.error('Fetch failed:', error);
+        forgotPasswordError.textContent = error.message;
+        forgotPasswordError.classList.remove('hidden');
+    })
+    .finally(() => {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Send Reset Link';
     });
 }
 
