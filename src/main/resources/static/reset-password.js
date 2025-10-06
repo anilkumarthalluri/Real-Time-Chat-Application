@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmPasswordInput = document.querySelector('#confirm-password');
     const successMessage = document.querySelector('#success-message');
     const errorMessage = document.querySelector('#error-message');
-    const spamMessage = document.querySelector('#spam-message');
 
     // Get the token from the URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -56,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(() => {
             resetPasswordForm.classList.add('hidden');
             successMessage.classList.remove('hidden');
-            spamMessage.classList.remove('hidden');
         })
         .catch(error => {
             errorMessage.textContent = error.message;
