@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             successMessage.classList.remove('hidden');
         })
         .catch(error => {
+            alert(error.message);
             errorMessage.textContent = error.message;
             errorMessage.classList.remove('hidden');
         });
