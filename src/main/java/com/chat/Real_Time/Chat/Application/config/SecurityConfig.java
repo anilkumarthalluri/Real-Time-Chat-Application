@@ -38,25 +38,20 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(
                                         "/api/v1/auth/**",
-                                        // SPA routes
-                                        "/",
-                                        "/login",
-                                        "/signup",
-                                        "/forgot-password",
-                                        "/chat",
-                                        "/reset-password",
                                         // Static resources
                                         "/index.html",
                                         "/main.js",
                                         "/main.css",
                                         "/reset-password.html",
                                         "/reset-password.js",
+                                        "/admin.html",
+                                        "/admin.js",
                                         // WebSocket
                                         "/ws/**",
-                                        // Admin (if any)
+                                        // SPA routes
+                                        "/",
                                         "/admin",
-                                        "/admin.html",
-                                        "/admin.js"
+                                        "/{path:[^\\.]*}"
                                 ).permitAll()
                                 .anyRequest()
                                 .authenticated()
